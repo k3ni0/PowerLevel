@@ -17,6 +17,7 @@ if (!$admin || !password_verify($password, $admin['password_hash'])) {
     die('Identifiants incorrects.');
 }
 
+session_regenerate_id(true);
 $_SESSION['admin_id'] = $admin['id'];
 $_SESSION['admin_username'] = $admin['username'];
 
