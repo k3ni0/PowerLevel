@@ -51,7 +51,6 @@
                     <!-- Colonne Droite -->
                     <div class="order-1 lg:order-2 pt-6 lg:pt-0 lg:pl-6">
                         <?php include 'dashboard_parts/training_section.php'; ?>
-                        <?php include 'dashboard_parts/custom_training_section.php'; ?>
                     </div>
                 </div>
             </div>
