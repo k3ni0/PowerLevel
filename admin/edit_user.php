@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once '../includes/functions.php';
 
 if (!isset($_GET['id'])) {
     header('Location: users.php');
@@ -23,9 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
-$user = $stmt->fetch();
+$user = getUserData($pdo, $user_id);
 
 if (!$user) {
     echo "Utilisateur introuvable.";

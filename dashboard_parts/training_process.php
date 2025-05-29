@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once '../includes/functions.php';
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -11,9 +12,7 @@ $user_id = $_SESSION['user_id'];
 $today = date('Y-m-d');
 
 // Récup utilisateur
-$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
-$stmt->execute([$user_id]);
-$user = $stmt->fetch();
+$user = getUserData($pdo, $user_id);
 
 $level = (int) $user['level'];
 
