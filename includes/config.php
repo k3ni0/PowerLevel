@@ -1,8 +1,14 @@
 <?php
-$host = 'localhost';
-$db   = 'u629142522_PowerLevel';
-$user = 'u629142522_K3NII0';     // à remplacer par ton user Hostinger
-$pass = '@78Aee4afdc6';    // à remplacer par ton mot de passe
+$envPath = __DIR__ . '/../.env';
+$env = [];
+if (file_exists($envPath)) {
+    $env = parse_ini_file($envPath);
+}
+
+$host = $env['DB_HOST'] ?? getenv('DB_HOST') ?? 'localhost';
+$db   = $env['DB_NAME'] ?? getenv('DB_NAME') ?? 'database';
+$user = $env['DB_USER'] ?? getenv('DB_USER') ?? 'user';
+$pass = $env['DB_PASS'] ?? getenv('DB_PASS') ?? 'password';
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
