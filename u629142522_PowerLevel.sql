@@ -156,6 +156,7 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `level` int(11) DEFAULT 1,
   `experience` int(11) DEFAULT 0,
+  `custom_xp` int(11) DEFAULT 0,
   `prestige` char(1) DEFAULT 'E',
   `profile_type` enum('débutant','amateur') NOT NULL,
   `avatar` varchar(255) DEFAULT NULL,
@@ -167,16 +168,17 @@ CREATE TABLE `users` (
   `last_prestige_offer` datetime DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   `is_public` tinyint(1) DEFAULT 0,
-  `public_token` varchar(100) DEFAULT NULL
+  `public_token` varchar(100) DEFAULT NULL,
+  `last_custom_training` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Déchargement des données de la table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `level`, `experience`, `prestige`, `profile_type`, `avatar`, `theme_color`, `bio`, `created_at`, `rest_day_1`, `rest_day_2`, `last_prestige_offer`, `age`, `is_public`, `public_token`) VALUES
-(1, 'K3NII0', 'gfoucher.creation@gmail.com', '$2y$10$D6WXnaBxBDhIXrPck1cvzOznThnant2nUw2qCB9g7n2/hgqpIAjUe', 2, 100, 'E', 'amateur', 'https://www.lesaventuresludiques.com/wp-content/uploads/2025/03/nouveau-jeu-solo-leveling.jpg', '#3498db', NULL, '2025-03-21 22:00:57', 'lundi', 'vendredi', '2025-03-21 23:13:46', 28, 1, 'k3nii0-c611e662'),
-(2, 'Dragoutoon', 'dragoutoon.twitch@gmail.com', '$2y$10$1QPOBe9HMRp3nzr1osXjyOJTG16cI.d1fbkpeZYx6DaeR0bP/NijG', 7, 600, 'E', 'amateur', 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmQ3b2tiZXFsZzRqZnpxMDZjYXUyZGlyYnFnZjd3YW9nOWF5NmJmdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ySvhFxq6Z4LrbqaikJ/giphy.gif', '#3498db', NULL, '2025-03-22 10:01:37', 'mercredi', 'samedi', NULL, 26, 1, 'dragoutoon-bafe0b12');
+INSERT INTO `users` (`id`, `username`, `email`, `password_hash`, `level`, `experience`, `custom_xp`, `prestige`, `profile_type`, `avatar`, `theme_color`, `bio`, `created_at`, `rest_day_1`, `rest_day_2`, `last_prestige_offer`, `age`, `is_public`, `public_token`, `last_custom_training`) VALUES
+(1, 'K3NII0', 'gfoucher.creation@gmail.com', '$2y$10$D6WXnaBxBDhIXrPck1cvzOznThnant2nUw2qCB9g7n2/hgqpIAjUe', 2, 100, 0, 'E', 'amateur', 'https://www.lesaventuresludiques.com/wp-content/uploads/2025/03/nouveau-jeu-solo-leveling.jpg', '#3498db', NULL, '2025-03-21 22:00:57', 'lundi', 'vendredi', '2025-03-21 23:13:46', 28, 1, 'k3nii0-c611e662', NULL),
+(2, 'Dragoutoon', 'dragoutoon.twitch@gmail.com', '$2y$10$1QPOBe9HMRp3nzr1osXjyOJTG16cI.d1fbkpeZYx6DaeR0bP/NijG', 7, 600, 0, 'E', 'amateur', 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmQ3b2tiZXFsZzRqZnpxMDZjYXUyZGlyYnFnZjd3YW9nOWF5NmJmdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/ySvhFxq6Z4LrbqaikJ/giphy.gif', '#3498db', NULL, '2025-03-22 10:01:37', 'mercredi', 'samedi', NULL, 26, 1, 'dragoutoon-bafe0b12', NULL);
 
 -- --------------------------------------------------------
 
@@ -315,6 +317,20 @@ INSERT INTO `workout_exercises` (`id`, `block_id`, `name`, `repetitions`) VALUES
 (56, 12, 'x1 3 Crunchs', 'x2'),
 (57, 12, 'Gainage', '15s');
 
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `custom_trainings`
+--
+
+CREATE TABLE `custom_trainings` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `name` varchar(100) DEFAULT NULL,
+  `duration` int(11) DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Index pour les tables déchargées
 --
@@ -420,6 +436,13 @@ ALTER TABLE `workout_exercises`
   ADD KEY `block_id` (`block_id`);
 
 --
+-- Index pour la table `custom_trainings`
+--
+ALTER TABLE `custom_trainings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -508,6 +531,12 @@ ALTER TABLE `workout_exercises`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
 
 --
+-- AUTO_INCREMENT pour la table `custom_trainings`
+--
+ALTER TABLE `custom_trainings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
 -- Contraintes pour les tables déchargées
 --
 
@@ -562,6 +591,12 @@ ALTER TABLE `user_workouts`
 --
 ALTER TABLE `workout_exercises`
   ADD CONSTRAINT `workout_exercises_ibfk_1` FOREIGN KEY (`block_id`) REFERENCES `workout_blocks` (`id`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `custom_trainings`
+--
+ALTER TABLE `custom_trainings`
+  ADD CONSTRAINT `custom_trainings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
