@@ -1,9 +1,14 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once "../includes/security.php";
 
-if (!isset($_POST['username'], $_POST['password'])) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_POST['username'], $_POST['password'])) {
     die('Champs manquants.');
+}
+
+if (!verifyCsrfToken($_POST["csrf_token"] ?? '')) {
+    die('Invalid CSRF token');
 }
 
 $username = $_POST['username'];

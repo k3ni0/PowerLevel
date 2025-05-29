@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once 'includes/security.php';
 
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
@@ -9,9 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id'];
 
-// Si action GET pour debug rapide (depuis lien)
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
+    $action = $_POST['action'] ?? '';
 
     if ($action === 'reset') {
         $pdo->prepare("DELETE FROM user_workouts WHERE user_id = ?")->execute([$user_id]);

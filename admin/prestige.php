@@ -1,9 +1,11 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once "../includes/security.php"; $csrf_token = generateCsrfToken();
 
 // 🔄 Mise à jour icône d’un prestige
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? '')) { die("Invalid CSRF"); }
     $code = $_POST['code'];
     $icon = trim($_POST['icon_url']);
 
@@ -48,6 +50,7 @@ $prestiges = $pdo->query("SELECT * FROM prestige_styles ORDER BY FIELD(code, 'E'
 
                 <form method="POST" class="space-y-2">
                     <input type="hidden" name="code" value="<?= $prestige['code'] ?>">
+                    <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     <input type="url" name="icon_url" value="<?= htmlspecialchars($prestige['icon_url']) ?>"
                            placeholder="URL de l’image"
                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded">

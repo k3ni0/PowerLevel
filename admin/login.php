@@ -1,3 +1,8 @@
+<?php
+session_start();
+require_once "../includes/security.php";
+$csrf_token = generateCsrfToken();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -13,6 +18,7 @@
 
         <form action="process_login.php" method="POST" class="space-y-4 text-left">
             <div>
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                 <label class="block text-sm text-gray-300">Nom d'utilisateur :</label>
                 <input type="text" name="username" required
                        class="w-full bg-gray-700 text-white px-4 py-2 rounded border border-gray-600">

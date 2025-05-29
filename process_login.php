@@ -1,7 +1,9 @@
 <?php
 session_start();
 require_once 'includes/config.php';
+require_once "includes/security.php";
 
+if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF token"); }
 if (!isset($_POST['identifier'], $_POST['password'])) {
     die('Champs manquants.');
 }

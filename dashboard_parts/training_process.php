@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once "../includes/security.php";
 
 if (!isset($_SESSION['user_id'])) {
     header("Location: login.php");
@@ -30,6 +31,7 @@ $jour_de_repos = (
 );
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { header("Location: ../dashboard.php"); exit; }
 // Vérif du token pour éviter soumission multiple
 if (
     !isset($_POST['training_token']) ||
