@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once '../includes/csrf.php';
 
 // Ajouter un bloc
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,8 +29,11 @@ $stmt->execute([$level_min, $level_max, $duration, $prestige, $profile_type]);
 }
 
 // Suppression
-if (isset($_GET['delete'])) {
-    $block_id = (int) $_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    if (!isset($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+        die('Invalid CSRF token');
+    }
+    $block_id = (int) $_POST['delete_id'];
     $pdo->prepare("DELETE FROM workout_blocks WHERE id = ?")->execute([$block_id]);
     header('Location: workouts.php');
     exit;
@@ -138,10 +142,12 @@ function getExercises($pdo, $block_id) {
                             <li><?= htmlspecialchars($exo['name']) ?> — <em><?= $exo['repetitions'] ?></em></li>
                         <?php endforeach; ?>
                     </ul>
-                    <a href="workouts.php?delete=<?= $block['id'] ?>"
-                       onclick="return confirm('Supprimer ce bloc ?')"
-                       class="text-red-400 hover:text-red-600 text-sm inline-block mt-2">🗑️ Supprimer</a>
-                       <a href="update_training.php?id=<?= $block['id'] ?>" 
+                    <form method="POST" action="workouts.php" onsubmit="return confirm('Supprimer ce bloc ?')" class="inline">
+                        <input type="hidden" name="delete_id" value="<?= $block['id'] ?>">
+                        <input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>">
+                        <button type="submit" class="text-red-400 hover:text-red-600 text-sm inline-block mt-2 bg-transparent border-0 p-0">🗑️ Supprimer</button>
+                    </form>
+                    <a href="update_training.php?id=<?= $block['id'] ?>"
    class="text-blue-400 hover:text-blue-500 text-sm">✏️ Modifier</a>
 
                 </div>

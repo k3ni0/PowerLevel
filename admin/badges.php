@@ -1,39 +1,34 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once '../includes/csrf.php';
 
-// Ajouter un badge
+
+// Ajouter ou supprimer un badge
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['delete_id'])) {
+        if (!isset($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+            die('Invalid CSRF token');
+        }
+        $badge_id = (int) $_POST['delete_id'];
+        $pdo->prepare("DELETE FROM user_badges WHERE badge_id = ?")->execute([$badge_id]);
+        $pdo->prepare("DELETE FROM badges WHERE id = ?")->execute([$badge_id]);
+        header('Location: badges.php');
+        exit;
+    }
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
     $icon = trim($_POST['icon']);
     $level = (int) $_POST['level_required'];
     $conditions_json = !empty($_POST['conditions_json']) ? trim($_POST['conditions_json']) : null;
-
-    // Sécurité JSON minimal
     if ($conditions_json && json_decode($conditions_json) === null) {
         die('❌ Format JSON invalide dans les conditions.');
     }
-    $stmt = $pdo->prepare("INSERT INTO badges (name, description, icon, level_required, conditions_json)
-    VALUES (?, ?, ?, ?, ?)");
-$stmt->execute([$name, $description, $icon, $level, $conditions_json]);
-
-
+    $stmt = $pdo->prepare("INSERT INTO badges (name, description, icon, level_required, conditions_json) VALUES (?, ?, ?, ?, ?)");
+    $stmt->execute([$name, $description, $icon, $level, $conditions_json]);
     header('Location: badges.php');
     exit;
 }
-
-// Supprimer un badge
-if (isset($_GET['delete'])) {
-    $badge_id = (int) $_GET['delete'];
-
-    $pdo->prepare("DELETE FROM user_badges WHERE badge_id = ?")->execute([$badge_id]);
-    $pdo->prepare("DELETE FROM badges WHERE id = ?")->execute([$badge_id]);
-
-    header('Location: badges.php');
-    exit;
-}
-
 // Récupération des badges
 $badges = $pdo->query("SELECT * FROM badges ORDER BY level_required")->fetchAll();
 ?>
@@ -118,9 +113,11 @@ $badges = $pdo->query("SELECT * FROM badges ORDER BY level_required")->fetchAll(
                             <p class="text-sm text-gray-300 italic"><?= htmlspecialchars($badge['description']) ?></p>
                         </div>
                     </div>
-                    <a href="badges.php?delete=<?= $badge['id'] ?>"
-                       onclick="return confirm('Supprimer ce badge ?')"
-                       class="text-red-400 hover:text-red-600 text-sm inline-block mt-2">🗑️ Supprimer</a>
+                    <form method="POST" action="badges.php" onsubmit="return confirm('Supprimer ce badge ?')" class="inline">
+                        <input type="hidden" name="delete_id" value="<?= $badge['id'] ?>">
+                        <input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>">
+                        <button type="submit" class="text-red-400 hover:text-red-600 text-sm inline-block mt-2 bg-transparent border-0 p-0">🗑️ Supprimer</button>
+                    </form>
                 </div>
             <?php endforeach; ?>
         </div>
