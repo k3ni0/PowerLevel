@@ -89,10 +89,6 @@ $publicUrl = $token ? $baseUrl . $token : '';
                 <div class="w-full h-2 bg-gray-700 rounded">
                     <div class="h-2 bg-purple-500 rounded" style="width: <?= ($_SESSION['level'] / 50) * 100 ?>%;"></div>
                 </div>
-                <p class="text-gray-100 font-semibold mt-2">XP perso : <span class="text-blue-300 font-semibold"><?= $custom_xp ?></span></p>
-                <div class="w-full h-2 bg-gray-700 rounded">
-                    <div class="h-2 bg-blue-500 rounded" style="width: <?= ($custom_xp % 1000) / 10 ?>%;"></div>
-                </div>
                 <div class="pt-4">
                 <form action="user_reset_stats.php" method="POST" onsubmit="return confirm('Réinitialiser toutes tes stats ?');" class="inline">
                     <input type="hidden" name="action" value="reset">

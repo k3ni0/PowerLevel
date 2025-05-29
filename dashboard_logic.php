@@ -23,13 +23,6 @@ $prestige = $user['prestige'];
 $current_xp = $experience % 1000;
 $xp_needed = $level * 1000;
 
-// Entraînements perso
-$stmt = $pdo->prepare("SELECT * FROM custom_trainings WHERE user_id = ? LIMIT 5");
-$stmt->execute([$user_id]);
-$custom_trainings = $stmt->fetchAll();
-$custom_xp = (int)$user['custom_xp'];
-$custom_done_today = ($user['last_custom_training'] && substr($user['last_custom_training'],0,10) === date('Y-m-d'));
-
 // 🔄 Badges manquants (si oubli logique précédente)
 $stmt = $pdo->prepare("
     SELECT b.id FROM badges b
