@@ -8,7 +8,8 @@ $prestigeIcon = $stmt->fetchColumn();
 // Profil public
 $token = $user['public_token'];
 $isPublic = (bool)$user['is_public'];
-$publicUrl = $token ? '/profil/index.php?token=' . urlencode($token) : '';
+$baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}/profil/";
+$publicUrl = $token ? $baseUrl . $token : '';
 ?>
 
 <div class="relative bg-gradient-to-r from-slate-900/40 to-slate-700/20 border border-gray-800 rounded-xl p-6 shadow-lg overflow-hidden">

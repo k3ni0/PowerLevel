@@ -1,11 +1,7 @@
 <?php
-$token = $_GET['token'] ?? '';
-if (!$token) {
-    $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-    $token = basename($path);
-}
-$token = rawurldecode($token);
 require_once '../includes/config.php';
+
+$token = basename($_SERVER['REQUEST_URI']);
 $stmt = $pdo->prepare("SELECT * FROM users WHERE public_token = ? AND is_public = 1");
 $stmt->execute([$token]);
 $user = $stmt->fetch();
