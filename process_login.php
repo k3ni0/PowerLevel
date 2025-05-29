@@ -19,6 +19,7 @@ if (!$user || !password_verify($password, $user['password_hash'])) {
 }
 
 // Connexion réussie, on lance la session
+session_regenerate_id(true);
 $_SESSION['user_id'] = $user['id'];
 $_SESSION['username'] = $user['username'];
 $_SESSION['level'] = $user['level'];
