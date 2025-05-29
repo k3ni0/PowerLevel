@@ -1,3 +1,9 @@
+<?php
+session_start();
+require_once "includes/security.php";
+$csrf_token = generateCsrfToken();
+$error = $_GET["error"] ?? "";
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -22,6 +28,7 @@
 
         <form action="process_login.php" method="POST" class="space-y-4">
             <input type="text" name="identifier" required placeholder="Pseudo ou email" class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
             <input type="password" name="password" required placeholder="Mot de passe" class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500">
 

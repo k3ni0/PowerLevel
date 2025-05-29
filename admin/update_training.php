@@ -1,6 +1,7 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once "../includes/security.php"; $csrf_token = generateCsrfToken();
 
 if (!isset($_GET['id'])) {
     header('Location: workouts.php');
@@ -25,6 +26,7 @@ $exercises = $stmt->fetchAll();
 
 // Modifier le bloc
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF"); }
     $level_min = $_POST['level_min'];
     $level_max = $_POST['level_max'];
     $duration = $_POST['duration_minutes'];
@@ -65,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form method="POST" class="space-y-4 bg-gray-800 p-6 rounded-xl border border-purple-600">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <div>
                 <label class="block text-sm text-gray-300">Prestige :</label>
                 <select name="prestige_required" class="w-full bg-gray-700 text-white px-3 py-2 rounded border border-gray-600">

@@ -1,8 +1,10 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once "../includes/security.php"; $csrf_token = generateCsrfToken();
 
 // Ajouter un badge
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF"); }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = trim($_POST['name']);
     $description = trim($_POST['description']);
@@ -56,6 +58,7 @@ $badges = $pdo->query("SELECT * FROM badges ORDER BY level_required")->fetchAll(
 
             <form method="POST" class="space-y-4">
                 <div>
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     <label class="block text-sm text-gray-300">Nom :</label>
                     <input type="text" name="name" required
                            class="w-full bg-gray-700 text-white px-4 py-2 rounded border border-gray-600">

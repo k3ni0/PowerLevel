@@ -1,9 +1,11 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once "../includes/security.php"; $csrf_token = generateCsrfToken();
 
 // Ajouter un bloc
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF"); }
     $level_min = $_POST['level_min'];
     $level_max = $_POST['level_max'];
     $duration = $_POST['duration_minutes'];
@@ -61,6 +63,7 @@ function getExercises($pdo, $block_id) {
             <h2 class="text-xl font-semibold mb-4 text-purple-300">➕ Nouveau bloc</h2>
             <form method="POST" class="space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                 <div class="space-y-3">
     <div>
         <label class="block text-sm text-gray-300 mb-1">Prestige :</label>

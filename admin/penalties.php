@@ -1,8 +1,10 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once "../includes/security.php"; $csrf_token = generateCsrfToken();
 
 // Ajouter une pénalité
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF"); }
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_id = $_POST['user_id'];
     $reason = trim($_POST['reason']);
@@ -42,6 +44,7 @@ $history = $pdo->query("
             <h2 class="text-xl font-semibold text-red-300 mb-4">➕ Appliquer une pénalité</h2>
             <form method="POST" class="space-y-4">
                 <div>
+                <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                     <label class="block text-sm text-gray-300 mb-1">Utilisateur :</label>
                     <select name="user_id" required class="w-full bg-gray-700 border border-gray-600 text-white rounded px-4 py-2">
                         <?php foreach ($users as $user): ?>

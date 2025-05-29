@@ -1,3 +1,8 @@
+<?php
+session_start();
+require_once "includes/security.php";
+$csrf_token = generateCsrfToken();
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -18,6 +23,7 @@
 
         <form action="process_register.php" method="POST" class="space-y-4 text-left">
             <input type="text" name="username" required placeholder="Nom d'utilisateur" class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
+            <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
             <input type="number" name="age" required min="13" max="99" placeholder="Âge" class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">
 
             <input type="email" name="email" required placeholder="Email" class="w-full px-4 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:ring-2 focus:ring-purple-500">

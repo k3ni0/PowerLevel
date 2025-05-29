@@ -1,6 +1,7 @@
 <?php
 
 if (session_status() === PHP_SESSION_NONE) session_start();
+require_once "includes/security.php";
 require_once 'includes/config.php';
 
 
@@ -43,6 +44,7 @@ foreach ($new_badges as $badge) {
 $show_class_choice = ($level >= 10 && $user['profile_type'] === 'débutant' && !isset($_GET['class_decided']));
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['class_choice'])) {
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { exit; }
     $choice = $_POST['class_choice'];
     if ($choice === 'amateur') {
         $pdo->prepare("UPDATE users SET profile_type = 'amateur' WHERE id = ?")->execute([$user_id]);
@@ -69,6 +71,7 @@ $show_prestige_modal = (
 );
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['prestige_choice'])) {
+    if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { exit; }
     $choice = $_POST['prestige_choice'];
     if ($choice === 'prestige' && $next_prestige) {
         $stmt = $pdo->prepare("UPDATE users SET prestige = ?, level = 1, experience = 0, last_prestige_offer = NOW() WHERE id = ?");

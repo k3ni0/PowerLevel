@@ -1,10 +1,11 @@
 <?php
 if (!isset($user_id)) {
     session_start();
-    $user_id = $_SESSION['user_id'];
-    require_once 'includes/config.php';
+    $user_id = $_SESSION["user_id"];
+    require_once "includes/config.php";
 }
-
+require_once "includes/security.php";
+$csrf_token = generateCsrfToken();
 $jours = ['lundi','mardi','mercredi','jeudi','vendredi','samedi','dimanche'];
 
 // Mise à jour des jours de repos
@@ -67,6 +68,7 @@ $rest = $stmt->fetch();
 </div>
 
 <script>
+const csrfToken = "<?= $csrf_token ?>";
 document.addEventListener('DOMContentLoaded', () => {
     const checkboxes = document.querySelectorAll('input[type="checkbox"][name="jours[]"]');
     const message = document.getElementById('restDaysMessage');
@@ -95,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch('dashboard_parts/update_rest_days.php', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `rest_day_1=${encodeURIComponent(selected[0])}&rest_day_2=${encodeURIComponent(selected[1])}`
+                body: `rest_day_1=${encodeURIComponent(selected[0])}&rest_day_2=${encodeURIComponent(selected[1])}&csrf_token=${encodeURIComponent(csrfToken)}`
             }).then(() => {
                 fetch('dashboard_parts/get_rest_days.php')
                     .then(res => res.text())

@@ -1,7 +1,9 @@
 <?php
+require_once "includes/security.php";
+$csrf_token = generateCsrfToken();
 // Récup ornement prestige
 $stmt = $pdo->prepare("SELECT icon_url FROM prestige_styles WHERE code = ?");
-$stmt->execute([$user['prestige']]);
+$stmt->execute([$user["prestige"]]);
 $prestigeIcon = $stmt->fetchColumn();
 
 // Profil public
@@ -140,6 +142,7 @@ $publicUrl = $token ? $baseUrl . $token : '';
 
 <!-- Script JS -->
 <script>
+const csrfToken = "<?= $csrf_token ?>";
 function editField(field) {
     document.getElementById(field + 'Display').parentElement.style.display = 'none';
     document.getElementById(field + 'Edit').style.display = 'block';
@@ -154,7 +157,7 @@ function updateProfile(field, value) {
     fetch('dashboard_parts/update_profile.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value)
+        body: 'field=' + encodeURIComponent(field) + '&value=' + encodeURIComponent(value) + '&csrf_token=' + encodeURIComponent(csrfToken)
     })
     .then(response => response.json())
     .then(data => {
@@ -209,7 +212,7 @@ function togglePublicProfile(makePublic) {
     fetch('dashboard_parts/toggle_public.php', {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: 'action=' + (makePublic ? 'public' : 'private')
+        body: 'action=' + (makePublic ? 'public' : 'private') + '&csrf_token=' + encodeURIComponent(csrfToken)
     }).then(() => window.location.reload());
 }
 function toggleAccordion(id) {

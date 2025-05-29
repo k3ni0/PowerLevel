@@ -1,8 +1,10 @@
 <?php
 session_start();
 require_once '../includes/config.php';
+require_once "../includes/security.php";
 
 $user_id = $_SESSION['user_id'] ?? null;
+if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { echo json_encode(["success"=>false]); exit; }
 if (!$user_id || !isset($_POST['field'], $_POST['value'])) {
     echo json_encode(['success' => false]);
     exit;

@@ -1,3 +1,7 @@
+<?php
+require_once "includes/security.php";
+$csrf_token = generateCsrfToken();
+?>
 <div class="relative bg-gradient-to-r from-slate-900/40 to-slate-700/20 border border-gray-800 rounded-xl py-3 px-6 shadow-lg overflow-hidden mb-5">
 <div class="text-sm text-gray-300">
                 ⏳ Prochaine échéance dans : <span id="dayCountdown" class="text-purple-400 font-semibold"></span>
@@ -87,6 +91,7 @@
 
                         <!-- Champs cachés -->
                         <input type="hidden" name="training_token" value="<?= $_SESSION['training_token'] ?>">
+                        <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                         <input type="hidden" name="failed" id="failFlag" value="0">
                     </div>
                 <?php endif; ?>

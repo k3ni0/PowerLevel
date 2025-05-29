@@ -1,6 +1,9 @@
 <?php
+session_start();
+require_once "includes/security.php";
 require_once 'includes/config.php';
 
+if (!verifyCsrfToken($_POST["csrf_token"] ?? "")) { die("Invalid CSRF token"); }
 // Vérifier si toutes les données sont là
 if (!isset($_POST['username'], $_POST['email'], $_POST['password'], $_POST['profile_type'])) {
     die('Formulaire incomplet.');
