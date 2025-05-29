@@ -1,8 +1,14 @@
 <?php
-define('DB_HOST', '127.0.0.1:3306');
-define('DB_NAME', 'u629142522_PowerLevel');
-define('DB_USER', 'u629142522_K3NII0');
-define('DB_PASS', '@78Aee4afdc6');
+$envPath = __DIR__ . '/../.env';
+$env = [];
+if (file_exists($envPath)) {
+    $env = parse_ini_file($envPath);
+}
+
+define('DB_HOST', $env['DB_HOST'] ?? getenv('DB_HOST') ?? '127.0.0.1');
+define('DB_NAME', $env['DB_NAME'] ?? getenv('DB_NAME') ?? 'database');
+define('DB_USER', $env['DB_USER'] ?? getenv('DB_USER') ?? 'user');
+define('DB_PASS', $env['DB_PASS'] ?? getenv('DB_PASS') ?? 'password');
 
 try {
     $pdo = new PDO(
