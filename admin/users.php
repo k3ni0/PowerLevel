@@ -1,10 +1,14 @@
 <?php
 require_once 'includes/auth.php';
 require_once '../includes/config.php';
+require_once '../includes/csrf.php';
 
 // Suppression d’un utilisateur (avec confirmation)
-if (isset($_GET['delete'])) {
-    $user_id = (int) $_GET['delete'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    if (!isset($_POST['csrf_token']) || !check_csrf_token($_POST['csrf_token'])) {
+        die('Invalid CSRF token');
+    }
+    $user_id = (int) $_POST['delete_id'];
     $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$user_id]);
     header('Location: users.php');
     exit;
@@ -55,7 +59,11 @@ $users = $pdo->query("SELECT id, username, email, level, prestige, profile_type,
                             <td class="px-4 py-2 space-x-2">
                                 <a href="penalties.php?user_id=<?= $user['id'] ?>" class="text-yellow-400 hover:underline text-xs">⚠️ Sanctionner</a>
                                 <a href="edit_user.php?id=<?= $user['id'] ?>" class="text-blue-400 hover:underline text-xs">✏️ Modifier</a>
-                                <a href="users.php?delete=<?= $user['id'] ?>" onclick="return confirm('Supprimer cet utilisateur ?')" class="text-red-400 hover:underline text-xs">🗑️ Supprimer</a>
+                                <form method="POST" action="users.php" onsubmit="return confirm('Supprimer cet utilisateur ?')" class="inline">
+                                    <input type="hidden" name="delete_id" value="<?= $user['id'] ?>">
+                                    <input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>">
+                                    <button type="submit" class="text-red-400 hover:underline text-xs bg-transparent border-0 p-0">🗑️ Supprimer</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

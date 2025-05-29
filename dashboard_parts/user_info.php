@@ -1,4 +1,5 @@
 <?php
+require_once 'includes/csrf.php';
 // Récup ornement prestige
 $stmt = $pdo->prepare("SELECT icon_url FROM prestige_styles WHERE code = ?");
 $stmt->execute([$user['prestige']]);
@@ -89,13 +90,17 @@ $publicUrl = $token ? $baseUrl . $token : '';
                     <div class="h-2 bg-purple-500 rounded" style="width: <?= ($_SESSION['level'] / 50) * 100 ?>%;"></div>
                 </div>
                 <div class="pt-4">
-                <a href="user_reset_stats.php?action=reset" onclick="return confirm('Réinitialiser toutes tes stats ?');" class="group relative px-3 p-2 text-sm/6 text-sky-800 dark:text-sky-300">
-    <span class="absolute inset-0 border border-dashed border-sky-300/60 bg-sky-400/10 group-hover:bg-sky-400/15 dark:border-sky-300/30">       
+                <form action="user_reset_stats.php" method="POST" onsubmit="return confirm('Réinitialiser toutes tes stats ?');" class="inline">
+                    <input type="hidden" name="action" value="reset">
+                    <input type="hidden" name="csrf_token" value="<?= get_csrf_token() ?>">
+                    <button type="submit" class="group relative px-3 p-2 text-sm/6 text-sky-800 dark:text-sky-300">
+    <span class="absolute inset-0 border border-dashed border-sky-300/60 bg-sky-400/10 group-hover:bg-sky-400/15 dark:border-sky-300/30">
     </span>Réinitialiser mes stats<svg width="5" height="5" viewBox="0 0 5 5" class="absolute top-[-2px] left-[-2px] fill-sky-300 dark:fill-sky-300/50">
         <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z"></path></svg><svg width="5" height="5" viewBox="0 0 5 5" class="absolute top-[-2px] right-[-2px] fill-sky-300 dark:fill-sky-300/50">
             <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z"></path></svg><svg width="5" height="5" viewBox="0 0 5 5" class="absolute bottom-[-2px] left-[-2px] fill-sky-300 dark:fill-sky-300/50">
                 <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z"></path></svg><svg width="5" height="5" viewBox="0 0 5 5" class="absolute right-[-2px] bottom-[-2px] fill-sky-300 dark:fill-sky-300/50">
-                    <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z"></path></svg></a>
+                    <path d="M2 0h1v2h2v1h-2v2h-1v-2h-2v-1h2z"></path></svg></button>
+                </form>
         </div>
             </div>
         </div>
